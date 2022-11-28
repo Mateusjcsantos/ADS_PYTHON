@@ -39,7 +39,8 @@ def limpar():
     retorno_end.delete(0, END)
     retorno_altura.delete(0, END)
     retorno_peso.delete(0, END)
-
+    resultado_texto['text'] = ''
+    resultado['text'] = ''
 
 # caixa texto nome
 txtnome = Label(app, text="Nome do Paciente:", bg='white', fg='black', anchor=W)
