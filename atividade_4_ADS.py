@@ -3,24 +3,13 @@ import sqlite3
 from sqlite3 import Error
 import os
 
+banco = sqlite3.connect("banco_imc.db")
+cursor = banco.cursor()
+
 ### Criando as tabelas do banco
 cursor.execute("CREATE TABLE cadastro (cad_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, enderco TEXT, peso NUMERIC, altura NUMERIC)")
 cursor.execute("CREATE TABLE imc (imc_id INTEGER PRIMARY KEY AUTOINCREMENT,resultado TEXT, resultado_valor NUMERIC)")
-
-### Inserindo dados na tabela
-try:
-    banco = sqlite3.connect("banco_imc.db")
-    cursor = banco.cursor()
-    cursor.execute("INSERT INTO cadastro (nome, enderco, peso, altura) VALUES ('"+nome+"')")
-
-    banco.commit()
-    banco.close()
-    print("Os dados foram removidos com sucesso")
-
-except sqlite3.Error as erro:
-    print("Erro ao exclur: ", erro)
-
-
+banco.commit()
 
 ########## INTERFACE GRÁFICA E CALCULO IMC
 from logging import root
@@ -37,7 +26,8 @@ def sair():
 
 #Função Calcular
 def calculo():
-    nome = retorno_nome.get()
+    nome = str(retorno_nome.get())
+    endereco = str(retorno_end.get())
     peso = float(retorno_peso.get())
     altura = float(retorno_altura.get())**2
     imc = round(peso / altura, 1)
@@ -57,6 +47,16 @@ def calculo():
         resultado_texto['text'] = 'OBESIDADE GRAU III'
 
     resultado['text']=fimc
+
+
+#Função Salvar Inserindo dados na tabela
+def salvar():
+    try:
+        cursor.execute("INSERT INTO cadastro VALUES ("+str(retorno_nome)+","+str(endereco)+","+str(peso)+","+str(altura)+")")
+        banco.commit()
+        banco.close()
+    except Error as ex:
+        print(ex)
 
 #Função limpar
 def limpar():
@@ -99,11 +99,13 @@ resultado_texto.place(x=260, y=90, width=140, height=35)
 
 #botões
 b_calcular = Button(app, command=calculo, text="Calcular")
-b_calcular.place(x=140, y=180, width=70, height=20)
+b_calcular.place(x=120, y=180, width=70, height=20)
 b_reiniciar = Button(app,command=limpar, text="Reiniciar")
-b_reiniciar.place(x=223, y=180, width=70, height=20)
+b_reiniciar.place(x=192, y=180, width=70, height=20)
 b_sair = Button(app,command=sair, text="Sair")
 b_sair.place(x=350, y=180, width=70, height=20)
+b_salvar = Button(app,command=salvar, text="Salvar")
+b_salvar.place(x=278, y=180, width=70, height=20)
 
 
 app.mainloop()
