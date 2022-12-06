@@ -1,24 +1,27 @@
 ########## CRIANDO BANCO DE DADOS
 import sqlite3
-from sqlite3 import Error
-import os
 
-banco = sqlite3.connect("banco_imc.db")
-cursor = banco.cursor()
+conn = sqlite3.connect("imc_database.db")
+cursor = conn.cursor()
 
-### Criando as tabelas do banco
-cursor.execute("CREATE TABLE cadastro (cad_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, enderco TEXT, peso NUMERIC, altura NUMERIC)")
-cursor.execute("CREATE TABLE imc (imc_id INTEGER PRIMARY KEY AUTOINCREMENT,resultado TEXT, resultado_valor NUMERIC)")
-banco.commit()
+#Criando as tabelas
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS PACIENTE (Id_cad INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+Nome_cad TEXT, Endereco_cad TEXT, Peso_cad NUMERIC, Altura_cad NUMERIC, Imc_cad NUMERIC);
+""")
 
-########## INTERFACE GRÁFICA E CALCULO IMC
+print("Conectado ao banco de dados")
+
+
+########## INTERFACE GRÁFICA E FUNÇÕES
 from logging import root
 from tkinter import *
+from tkinter import messagebox
 
 app = Tk()
 app.title('CÁLCULO DE IMC   ÍNDICE DE MASSA CORPORAL')
 app.geometry('450x230')
-app.configure(bg='white')
+app.configure(bg='BLUE')
 
 #Função Sair
 def sair():
@@ -48,15 +51,11 @@ def calculo():
 
     resultado['text']=fimc
 
-
 #Função Salvar Inserindo dados na tabela
 def salvar():
-    try:
-        cursor.execute("INSERT INTO cadastro VALUES ("+str(retorno_nome)+","+str(endereco)+","+str(peso)+","+str(altura)+")")
-        banco.commit()
-        banco.close()
-    except Error as ex:
-        print(ex)
+    cursor.execute("""INSERT INTO PACIENTE (Nome_cad, Endereco_cad, Peso_cad, Altura_cad, Imc_cad) VALUES ('"+nome+"', '"+endereco+"', "+str(peso)+", "+str(altura)+", "+str(fimc)+")""")
+    conn.commit()
+    messagebox.showinfo(title='Registro info', message='Registro salvo com sucesso')
 
 #Função limpar
 def limpar():
