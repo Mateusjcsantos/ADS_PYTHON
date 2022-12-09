@@ -9,7 +9,6 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS PACIENTE (Id_cad INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 Nome_cad TEXT, Endereco_cad TEXT, Peso_cad NUMERIC, Altura_cad NUMERIC, Imc_cad NUMERIC);
 """)
-
 print("Conectado ao banco de dados")
 
 
@@ -21,7 +20,7 @@ from tkinter import messagebox
 app = Tk()
 app.title('CÁLCULO DE IMC   ÍNDICE DE MASSA CORPORAL')
 app.geometry('450x230')
-app.configure(bg='BLUE')
+app.configure(bg='WHITE')
 
 #Função Sair
 def sair():
@@ -53,7 +52,11 @@ def calculo():
 
 #Função Salvar Inserindo dados na tabela
 def salvar():
-    cursor.execute("""INSERT INTO PACIENTE (Nome_cad, Endereco_cad, Peso_cad, Altura_cad, Imc_cad) VALUES ('"+nome+"', '"+endereco+"', "+str(peso)+", "+str(altura)+", "+str(fimc)+")""")
+    name=retorno_nome
+    print(retorno_nome)
+    conn = sqlite3.connect("imc_database.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO PACIENTE (Nome_cad, Endereco_cad, Peso_cad, Altura_cad, Imc_cad) VALUES ("+retorno_nome+", "+retorno_end+", "+str(retorno_peso)+", "+str(retorno_altura)+", "+str(resultado)+")")
     conn.commit()
     messagebox.showinfo(title='Registro info', message='Registro salvo com sucesso')
 
@@ -105,6 +108,5 @@ b_sair = Button(app,command=sair, text="Sair")
 b_sair.place(x=350, y=180, width=70, height=20)
 b_salvar = Button(app,command=salvar, text="Salvar")
 b_salvar.place(x=278, y=180, width=70, height=20)
-
 
 app.mainloop()
