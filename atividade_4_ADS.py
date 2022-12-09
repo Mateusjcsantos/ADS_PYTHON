@@ -32,7 +32,7 @@ def calculo():
     endereco = str(retorno_end.get())
     peso = float(retorno_peso.get())
     altura = float(retorno_altura.get())
-    alt = altura ** 2
+    alt = float(altura ** 2)
     imc = round(peso / alt, 1)
     fimc = imc
 
@@ -63,6 +63,15 @@ def salvar():
     cursor.execute(query)
     conn.commit()
     messagebox.showinfo(title='Registro info', message='Registro salvo com sucesso')
+
+    queryselect = "SELECT * FROM PACIENTE"
+    cursor.execute(queryselect)
+    res = cursor.fetchall()
+    for i in res:
+        print('\n')
+        for v in i:
+            print(v, end=' ')
+    conn.close()
 
 #Função limpar
 def limpar():
