@@ -7,7 +7,7 @@ cursor = conn.cursor()
 #Criando as tabelas
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS PACIENTE (Id_cad INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-Nome_cad TEXT, Endereco_cad TEXT, Peso_cad NUMERIC, Altura_cad NUMERIC, Imc_cad NUMERIC);
+Nome TEXT, Endereco TEXT, Peso NUMERIC, Altura NUMERIC, Imc NUMERIC, Status TEXT);
 """)
 print("Conectado ao banco de dados")
 
@@ -31,32 +31,36 @@ def calculo():
     nome = str(retorno_nome.get())
     endereco = str(retorno_end.get())
     peso = float(retorno_peso.get())
-    altura = float(retorno_altura.get())**2
-    imc = round(peso / altura, 1)
+    altura = float(retorno_altura.get())
+    alt = altura ** 2
+    imc = round(peso / alt, 1)
     fimc = imc
 
     if fimc < 18.5:
-        resultado_texto['text'] = 'ABAIXO DO PESO'
+       resultado_texto['text'] = 'ABAIXO DO PESO'
     if fimc > 18.5 and fimc < 24.9:
-        resultado_texto['text'] = 'PESO IDEAL'
+       resultado_texto['text'] = 'PESO IDEAL'
     if fimc > 25 and fimc < 29.9:
-        resultado_texto['text'] = 'SOBREPESO'
+       resultado_texto['text'] = 'SOBREPESO'
     if fimc > 30 and fimc < 34.9:
-        resultado_texto['text'] = 'OBESIDADE GRAU I'
+       resultado_texto['text'] = 'OBESIDADE GRAU I'
     if fimc > 35 and fimc < 39.9:
-        resultado_texto['text'] = 'OBESIDADE GRAU II'
+       resultado_texto['text'] = 'OBESIDADE GRAU II'
     if fimc > 40:
-        resultado_texto['text'] = 'OBESIDADE GRAU III'
+       resultado_texto['text'] = 'OBESIDADE GRAU III'
 
     resultado['text']=fimc
 
+    return nome, endereco, peso, altura, fimc, resultado_texto['text']
+
 #Função Salvar Inserindo dados na tabela
 def salvar():
-    name=retorno_nome
-    print(retorno_nome)
+    nome, endereco, peso, altura, fimc, status = calculo()
     conn = sqlite3.connect("imc_database.db")
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO PACIENTE (Nome_cad, Endereco_cad, Peso_cad, Altura_cad, Imc_cad) VALUES ("+retorno_nome+", "+retorno_end+", "+str(retorno_peso)+", "+str(retorno_altura)+", "+str(resultado)+")")
+    query = f"INSERT INTO PACIENTE (Nome, Endereco, Peso, Altura, Imc, Status) \
+            VALUES ('{nome}', '{endereco}', {peso}, {altura}, '{fimc}', '{status}')"
+    cursor.execute(query)
     conn.commit()
     messagebox.showinfo(title='Registro info', message='Registro salvo com sucesso')
 
@@ -82,7 +86,7 @@ retorno_end = Entry(app,bg='light gray', fg='black')
 retorno_end.place(x=150, y=60, width=250, height=20)
 
 # caixa texto altura
-txtaltura = Label(app, text="Altura (cm)", bg='white', fg='black', anchor=W)
+txtaltura = Label(app, text="Altura (Metros)", bg='white', fg='black', anchor=W)
 txtaltura.place(x=10, y=90, width=120, height=20)
 retorno_altura = Entry(app,bg='light gray', fg='black')
 retorno_altura.place(x=150, y=90, width=100, height=20)
